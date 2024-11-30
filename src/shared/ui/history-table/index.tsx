@@ -15,16 +15,8 @@ import {
   flexRender,
   getCoreRowModel,
 } from '@tanstack/react-table'
+import { DataRow } from 'pages/home'
 import { useNavigate } from 'react-router-dom'
-
-interface DataRow {
-  id: number
-  time: string
-  fileName: string
-  status: string
-  classes: string
-  preview: boolean
-}
 
 interface TableProps {
   data: DataRow[]
@@ -100,8 +92,12 @@ export const HistoryTable: React.FC<TableProps> = ({ data, columns }) => {
               <Tr
                 p={2}
                 key={row.id}
-                onClick={() => navigate(`/file/${row.original.id}`)}
-                cursor="pointer"
+                onClick={() =>
+                  row.original.status === 'completed'
+                    ? navigate(`/file/${row.original.id}`)
+                    : undefined
+                }
+                cursor={row.original.status === 'completed' ? 'pointer' : ''}
                 _hover={{ bg: 'gray.100' }}
               >
                 {row.getVisibleCells().map((cell) => (

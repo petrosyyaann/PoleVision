@@ -86,7 +86,7 @@ const UploadPage = () => {
     <ContainerApp>
       <Flex direction="column" w="100%" h="100%">
         <Text fontSize="18px" fontWeight="700" mb="15px">
-          Загрузка данных
+          Загрузка изображений для детекции
         </Text>
         <Flex
           h="100%"

@@ -1,13 +1,15 @@
-import { Flex, Text } from '@chakra-ui/react'
-import React, { useEffect, useRef, useState } from 'react'
+import { Box, Flex, IconButton, Tooltip } from '@chakra-ui/react'
+import { useEffect, useRef, useState } from 'react'
+import photo from './example.jpg'
+import { Minus, Plus } from 'shared/iconpack'
 
 export interface Annotation {
-  object_class: number // Класс объекта
-  x_center: number // Центр области по X (относительная координата, 0-1)
-  y_center: number // Центр области по Y (относительная координата, 0-1)
-  width: number // Ширина области (относительная к изображению, 0-1)
-  height: number // Высота области (относительная к изображению, 0-1)
-  prob: number // Вероятность (доверие модели, 0-1)
+  object_class: string
+  x_center: number
+  y_center: number
+  width: number
+  height: number
+  prob: number
 }
 
 interface AnnotatedImageProps {
@@ -15,12 +17,12 @@ interface AnnotatedImageProps {
   annotations: Annotation[]
 }
 
-const getColorByClass = (objectClass: number): string => {
-  if ([0, 8].includes(objectClass)) return '#7984F1'
-  if ([1, 7].includes(objectClass)) return '#61C6FF'
-  if ([2, 9].includes(objectClass)) return '#F179C1'
-  if ([5, 6].includes(objectClass)) return '#79F17E'
-  if (objectClass === 10) return '#FFDC61'
+const getColorByClass = (objectClass: string): string => {
+  if ('Одноцепная башенного типа' === objectClass) return '#7984F1'
+  if ('Двухцепная башенного типа' === objectClass) return '#61C6FF'
+  if ('Свободно стоящая типа «рюмка»' === objectClass) return '#F179C1'
+  if ('Портальная на оттяжках' === objectClass) return '#79F17E'
+  if (objectClass === 'Другие классы') return '#FFDC61'
   return '#000000'
 }
 
@@ -28,6 +30,14 @@ const AnnotatedImage: React.FC<AnnotatedImageProps> = ({
   imageUrl,
   annotations,
 }) => {
+  const [scale, setScale] = useState(1)
+  const [translate, setTranslate] = useState({ x: 0, y: 0 })
+  const [isDragging, setIsDragging] = useState(false)
+  const [lastMousePosition, setLastMousePosition] = useState<{
+    x: number
+    y: number
+  } | null>(null)
+
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [hoveredAnnotation, setHoveredAnnotation] = useState<Annotation | null>(
     null
@@ -43,34 +53,52 @@ const AnnotatedImage: React.FC<AnnotatedImageProps> = ({
 
     if (canvas && context) {
       const image = new Image()
-      image.src = imageUrl
+      image.src = photo
+      // imageUrl
 
       image.onload = () => {
-        // Устанавливаем размеры canvas равными размеру изображения
         canvas.width = image.width
         canvas.height = image.height
 
-        // Рисуем изображение
-        context.drawImage(image, 0, 0)
+        const drawCanvas = () => {
+          context.clearRect(0, 0, canvas.width, canvas.height)
 
-        // Рисуем все аннотации
-        annotations.forEach(
-          ({ x_center, y_center, width, height, object_class }) => {
-            // Преобразуем относительные координаты в абсолютные
-            const x = (x_center - width / 2) * image.width
-            const y = (y_center - height / 2) * image.height
-            const boxWidth = width * image.width
-            const boxHeight = height * image.height
+          context.save()
+          context.scale(scale, scale)
+          context.translate(translate.x, translate.y)
 
-            // Рисуем рамку
-            context.strokeStyle = getColorByClass(object_class)
-            context.lineWidth = 20
-            context.strokeRect(x, y, boxWidth, boxHeight)
-          }
-        )
+          context.drawImage(image, 0, 0)
+
+          annotations.forEach(
+            ({ x_center, y_center, width, height, object_class }) => {
+              const x = (x_center - width / 2) * image.width
+              const y = (y_center - height / 2) * image.height
+              const boxWidth = width * image.width
+              const boxHeight = height * image.height
+
+              context.strokeStyle = getColorByClass(object_class)
+              context.lineWidth = 20 / scale
+              context.strokeRect(x, y, boxWidth, boxHeight)
+            }
+          )
+
+          context.restore()
+        }
+
+        drawCanvas()
       }
     }
-  }, [imageUrl, annotations])
+  }, [imageUrl, annotations, scale, translate])
+
+  const handleMouseDown = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    setIsDragging(true)
+    setLastMousePosition({ x: event.clientX, y: event.clientY })
+  }
+
+  const handleMouseUp = () => {
+    setIsDragging(false)
+    setLastMousePosition(null)
+  }
 
   const handleMouseMove = (event: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current
@@ -80,32 +108,59 @@ const AnnotatedImage: React.FC<AnnotatedImageProps> = ({
     const scaleX = canvas.width / rect.width
     const scaleY = canvas.height / rect.height
 
-    const mouseX = (event.clientX - rect.left) * scaleX
-    const mouseY = (event.clientY - rect.top) * scaleY
+    if (isDragging && lastMousePosition) {
+      // Вычисляем смещение на основе движения мыши
+      const dx = (event.clientX - lastMousePosition.x) / scale
+      const dy = (event.clientY - lastMousePosition.y) / scale
 
-    let foundAnnotation: Annotation | null = null
+      // Обновляем смещение (translate)
+      setTranslate((prev) => ({
+        x: prev.x + dx,
+        y: prev.y + dy,
+      }))
 
-    annotations.forEach((annotation) => {
-      const { x_center, y_center, width, height } = annotation
-      const x = (x_center - width / 2) * canvas.width
-      const y = (y_center - height / 2) * canvas.height
-      const boxWidth = width * canvas.width
-      const boxHeight = height * canvas.height
+      // Обновляем последнюю позицию мыши
+      setLastMousePosition({ x: event.clientX, y: event.clientY })
+    } else {
+      // Обработка hover-аннотаций
+      const mouseX = (event.clientX - rect.left) * scaleX
+      const mouseY = (event.clientY - rect.top) * scaleY
 
-      // Проверяем, находится ли курсор внутри аннотации
-      if (
-        mouseX >= x &&
-        mouseX <= x + boxWidth &&
-        mouseY >= y &&
-        mouseY <= y + boxHeight
-      ) {
-        foundAnnotation = annotation
-        setTooltipPosition({ x: mouseX, y: mouseY })
+      // Корректируем координаты мыши с учетом зума и смещения
+      const adjustedMouseX = mouseX / scale - translate.x
+      const adjustedMouseY = mouseY / scale - translate.y
+
+      let foundAnnotation: Annotation | null = null
+
+      annotations.forEach((annotation) => {
+        const { x_center, y_center, width, height } = annotation
+
+        // Координаты аннотаций в пикселях
+        const x = (x_center - width / 2) * canvas.width
+        const y = (y_center - height / 2) * canvas.height
+        const boxWidth = width * canvas.width
+        const boxHeight = height * canvas.height
+
+        // Проверяем попадание курсора
+        if (
+          adjustedMouseX >= x &&
+          adjustedMouseX <= x + boxWidth &&
+          adjustedMouseY >= y &&
+          adjustedMouseY <= y + boxHeight
+        ) {
+          foundAnnotation = annotation
+          setTooltipPosition({
+            x: event.clientX, // Для отображения тултипа
+            y: event.clientY,
+          })
+        }
+      })
+
+      setHoveredAnnotation(foundAnnotation)
+      if (!foundAnnotation) {
+        setTooltipPosition(null)
       }
-    })
-
-    setHoveredAnnotation(foundAnnotation)
-    if (!foundAnnotation) setTooltipPosition(null)
+    }
   }
 
   const handleMouseLeave = () => {
@@ -113,32 +168,91 @@ const AnnotatedImage: React.FC<AnnotatedImageProps> = ({
     setTooltipPosition(null)
   }
 
+  const zoomIn = () => {
+    setScale((prevScale) => {
+      const newScale = Math.min(prevScale + 0.1, 3)
+      adjustTranslate(newScale, prevScale)
+      return newScale
+    })
+  }
+
+  const zoomOut = () => {
+    setScale((prevScale) => {
+      const newScale = Math.max(prevScale - 0.1, 0.5)
+      adjustTranslate(newScale, prevScale)
+      return newScale
+    })
+  }
+
+  const adjustTranslate = (newScale: number, prevScale: number) => {
+    setTranslate((prevTranslate) => {
+      const canvas = canvasRef.current
+      if (!canvas) return prevTranslate
+
+      const rect = canvas.getBoundingClientRect()
+      const centerX = rect.width / 2
+      const centerY = rect.height / 2
+
+      const deltaScale = newScale / prevScale
+      return {
+        x: (prevTranslate.x - centerX) * deltaScale + centerX,
+        y: (prevTranslate.y - centerY) * deltaScale + centerY,
+      }
+    })
+  }
+
   return (
-    <Flex position="relative" width="100%" height="auto">
+    <Flex position="relative" maxH="90svh" w="100%" justifyContent="center">
+      <Flex
+        position="absolute"
+        top="45%"
+        left="10px"
+        flexDirection="column"
+        gap="10px"
+        zIndex="10"
+      >
+        <IconButton
+          icon={<Plus />}
+          background="#83D2FF"
+          onClick={zoomIn}
+          aria-label={'plus'}
+        />
+        <IconButton
+          icon={<Minus />}
+          background="#83D2FF"
+          onClick={zoomOut}
+          aria-label={'minus'}
+        />
+      </Flex>
       <canvas
         ref={canvasRef}
-        style={{ width: '100%', height: 'auto' }}
+        style={{ maxWidth: '100%', height: '100%' }}
+        onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseLeave}
       />
       {hoveredAnnotation && tooltipPosition && (
-        <div
-          style={{
-            position: 'absolute',
-            left: `${tooltipPosition.x}px`,
-            top: `${tooltipPosition.y}px`,
-            transform: 'translate(-50%, -100%)',
-            background: 'rgba(0, 0, 0, 0.7)',
-            color: 'white',
-            padding: '5px 10px',
-            borderRadius: '4px',
-            pointerEvents: 'none',
-            fontSize: '14px',
-            zIndex: 9999,
-          }}
+        <Tooltip
+          label={hoveredAnnotation.object_class}
+          isOpen
+          placement="top"
+          bg="blackAlpha.700"
+          color="white"
+          borderRadius="md"
+          fontSize="md"
+          px="4"
+          py="2"
+          hasArrow
         >
-          <Text color="white">Class: {hoveredAnnotation.object_class}</Text>
-        </div>
+          <Box
+            position="fixed"
+            left={`${tooltipPosition.x}px`}
+            top={`${tooltipPosition.y - 10}px`}
+            transform="translate(-50%, -100%)"
+            zIndex="999"
+          />
+        </Tooltip>
       )}
     </Flex>
   )

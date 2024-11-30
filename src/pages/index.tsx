@@ -6,6 +6,7 @@ import { BoardMenu } from 'widgets/BoardMenu/ui'
 const HomePage = lazy(() => import('./home'))
 const UploadPage = lazy(() => import('./upload'))
 const FilesPage = lazy(() => import('./files'))
+const FilePage = lazy(() => import('./file'))
 
 export default function Routing() {
   return (
@@ -16,7 +17,8 @@ export default function Routing() {
       <Routes>
         <Route path={'/'} element={<UploadPage />} />
         <Route path={'/home'} element={<HomePage />} />
-        <Route path={'/file/:id'} element={<FilesPage />} />
+        <Route path={'/files'} element={<FilesPage />} />
+        <Route path={'/file/:id'} element={<FilePage />} />
         <Route
           path={'*'}
           element={
