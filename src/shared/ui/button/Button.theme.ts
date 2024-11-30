@@ -7,7 +7,7 @@ export const ButtonTheme = defineStyleConfig({
     borderRadius: '7px',
     fontWeight: '400',
     fontSize: '14px',
-    background: 'blue.300',
+    background: '#7984F1',
     color: 'white',
     _hover: { background: 'blue.400', color: 'white' },
     _disabled: { background: 'gray.200', opacity: 1 },
@@ -15,7 +15,7 @@ export const ButtonTheme = defineStyleConfig({
   variants: {
     baseStyle: {
       height: '30px',
-      background: 'blue.300',
+      background: '#7984F1',
       color: 'white',
       _hover: { background: 'blue.400', color: 'white' },
       _disabled: { background: 'gray.200', opacity: 1 },

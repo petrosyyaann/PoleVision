@@ -1,6 +1,10 @@
+import { AxiosProgressEvent } from 'axios'
 import axios from 'shared/api/axios'
 
-export function postFiles(files: File[]) {
+export function postFiles(
+  files: File[],
+  onProgress: (progressEvent: AxiosProgressEvent) => void
+) {
   const formData = new FormData()
   files.forEach((file) => {
     formData.append('files', file)
@@ -11,6 +15,7 @@ export function postFiles(files: File[]) {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
+    onUploadProgress: onProgress, 
   })
 }
 
