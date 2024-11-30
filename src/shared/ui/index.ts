@@ -1,6 +1,5 @@
 export * from './default-layout'
 export * from './input'
-export * from './text-area'
 export * from './box'
 export * from './button'
 export * from './center'
