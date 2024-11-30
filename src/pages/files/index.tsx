@@ -24,11 +24,11 @@ export interface FileData {
 }
 
 const CLASS_NAMES: Record<string, string> = {
-  '0-1': 'Башенного типа',
-  '2-3': 'Рюмка вид',
-  '6-7': 'Портальная на оттяжках вид',
-  '8-9': 'Башенного типа вид',
-  '10': 'Другое',
+  '0-8': 'Одноцепная башенного типа',
+  '1-7': 'Двухцепная башенного типа',
+  '2-9': 'Свободно стоящая типа «рюмка»',
+  '5-6': 'Портальная на оттяжках',
+  '10': 'Другие классы',
 }
 
 const Files = () => {
@@ -65,10 +65,10 @@ const Files = () => {
 
     // Создаем ключ для объединенных классов
     let classKey = object_class.toString()
-    if (object_class === 0 || object_class === 1) classKey = '0-1'
-    else if (object_class === 2 || object_class === 3) classKey = '2-3'
-    else if (object_class === 6 || object_class === 7) classKey = '6-7'
-    else if (object_class === 8 || object_class === 9) classKey = '8-9'
+    if (object_class === 0 || object_class === 8) classKey = '0-8'
+    else if (object_class === 1 || object_class === 7) classKey = '1-7'
+    else if (object_class === 2 || object_class === 9) classKey = '2-9'
+    else if (object_class === 5 || object_class === 6) classKey = '5-6'
     else if (object_class === 10) classKey = '10'
 
     if (!groupedAnnotations[classKey]) {
@@ -82,13 +82,20 @@ const Files = () => {
 
   return (
     <ContainerApp>
-      <Tabs variant="enclosed">
-        <TabList>
-          <Tab>Все классы</Tab>
+      <Tabs variant="enclosed" isFitted>
+        <TabList
+          display="flex"
+          flexDirection={['column', 'row']}
+          flexWrap={['nowrap', 'wrap']}
+          gap={2}
+        >
+          <Tab fontSize={['sm', 'md', 'lg']}>Все классы</Tab>
           {Object.entries(CLASS_NAMES).map(([key, value]) => (
-            <Tab key={key}>{value}</Tab>
+            <Tab fontSize={['sm', 'md', 'lg']} key={key}>
+              {value}
+            </Tab>
           ))}
-          <Tab>Разные классы</Tab>
+          <Tab fontSize={['sm', 'md', 'lg']}>Несколько классов</Tab>
         </TabList>
 
         <TabPanels>
@@ -108,7 +115,12 @@ const Files = () => {
           <TabPanel>
             <SimpleGrid columns={[1, 2, 3]} spacing={4}>
               {labeling
-                .filter((label) => label.object_class === 10)
+                .filter(
+                  (label) =>
+                    !['0-1', '2-3', '6-7', '8-9', '10'].includes(
+                      label.object_class.toString()
+                    )
+                )
                 .map((annotation, index) => (
                   <AnnotatedImage
                     key={index}
@@ -122,12 +134,12 @@ const Files = () => {
           {/* Вкладки по объединенным классам */}
           {Object.entries(CLASS_NAMES).map(([key]) => (
             <TabPanel key={key}>
-              <SimpleGrid columns={[1, 2, 3]} spacing={4}>
-                {groupedAnnotations[key]?.map((annotation, index) => (
+              <SimpleGrid columns={[1, 2, 3]} spacing={[2, 4, 6]} p={[2, 4, 6]}>
+                {labeling.map((label, index) => (
                   <AnnotatedImage
                     key={index}
                     imageUrl={original_s3_url}
-                    annotations={[annotation]}
+                    annotations={[label]}
                   />
                 ))}
               </SimpleGrid>

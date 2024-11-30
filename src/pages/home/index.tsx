@@ -20,21 +20,32 @@ const HomePage = () => {
     const fetchData = async () => {
       try {
         const response = await getHistory()
-        const transformedData = response.data.map((item: { 
-          id: number, 
-          name: string, 
-          object_classes: string[], 
-          preview_s3_url: string | null, 
-          status: string, 
-          created_at: string 
-        }) => ({
-          id: item.id,
-          time: new Date(item.created_at).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-          fileName: item.name,
-          status: item.status === 'completed' ? 'Обработано' : 'В процессе',
-          classes: item.object_classes.length > 0 ? item.object_classes.join(', ') : '—',
-          preview: Boolean(item.preview_s3_url),
-        }))
+        const transformedData = response.data.map(
+          (item: {
+            id: number
+            name: string
+            object_classes: string[]
+            preview_s3_url: string | null
+            status: string
+            created_at: string
+          }) => ({
+            id: item.id,
+            time: new Date(item.created_at).toLocaleString('ru-RU', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+            fileName: item.name,
+            status: item.status === 'completed' ? 'Обработано' : 'В процессе',
+            classes:
+              item.object_classes.length > 0
+                ? item.object_classes.join(', ')
+                : '—',
+            preview: Boolean(item.preview_s3_url),
+          })
+        )
         setData(transformedData)
       } catch (error) {
         console.error('Ошибка загрузки данных:', error)
@@ -101,7 +112,6 @@ const HomePage = () => {
         direction="column"
         overflowY="scroll"
         overflowX="hidden"
-        mr="30px"
       >
         <Text fontSize="18px" fontWeight={700} mb="15px">
           История загрузки

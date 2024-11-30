@@ -15,6 +15,15 @@ interface AnnotatedImageProps {
   annotations: Annotation[]
 }
 
+const getColorByClass = (objectClass: number): string => {
+  if ([0, 8].includes(objectClass)) return '#7984F1'
+  if ([1, 7].includes(objectClass)) return '#61C6FF'
+  if ([2, 9].includes(objectClass)) return '#F179C1'
+  if ([5, 6].includes(objectClass)) return '#79F17E'
+  if (objectClass === 10) return '#FFDC61'
+  return '#000000'
+}
+
 const AnnotatedImage: React.FC<AnnotatedImageProps> = ({
   imageUrl,
   annotations,
@@ -45,18 +54,20 @@ const AnnotatedImage: React.FC<AnnotatedImageProps> = ({
         context.drawImage(image, 0, 0)
 
         // Рисуем все аннотации
-        annotations.forEach(({ x_center, y_center, width, height }) => {
-          // Преобразуем относительные координаты в абсолютные
-          const x = (x_center - width / 2) * image.width
-          const y = (y_center - height / 2) * image.height
-          const boxWidth = width * image.width
-          const boxHeight = height * image.height
+        annotations.forEach(
+          ({ x_center, y_center, width, height, object_class }) => {
+            // Преобразуем относительные координаты в абсолютные
+            const x = (x_center - width / 2) * image.width
+            const y = (y_center - height / 2) * image.height
+            const boxWidth = width * image.width
+            const boxHeight = height * image.height
 
-          // Рисуем рамку
-          context.strokeStyle = 'red'
-          context.lineWidth = 20
-          context.strokeRect(x, y, boxWidth, boxHeight)
-        })
+            // Рисуем рамку
+            context.strokeStyle = getColorByClass(object_class)
+            context.lineWidth = 20
+            context.strokeRect(x, y, boxWidth, boxHeight)
+          }
+        )
       }
     }
   }, [imageUrl, annotations])

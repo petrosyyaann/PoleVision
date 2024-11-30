@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import {
   Flex,
   Icon,
@@ -7,37 +7,49 @@ import {
   Text,
   useToast,
   Spinner,
+  useBreakpointValue,
 } from '@chakra-ui/react'
-import { Close, Upload } from 'shared/iconpack'
+import { Close, Upload, Camera } from 'shared/iconpack'
 import { Button, ContainerApp } from 'shared/ui'
 import { postFiles } from 'entities/file/api'
 
 const UploadPage = () => {
-  const [file, setFile] = useState<File[] | null>([])
+  const isMobile = useBreakpointValue({ base: true, md: false })
+  const [files, setFiles] = useState<File[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const cameraInputRef = useRef<HTMLInputElement>(null)
   const toast = useToast()
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    source: string
+  ) => {
     const newFiles = event.target.files ? Array.from(event.target.files) : []
-    setFile(newFiles)
-  }
-
-  const handleUploadClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click()
+    if (newFiles.length > 0) {
+      setFiles((prevFiles) => [...prevFiles, ...newFiles])
+      toast({
+        title: `${source === 'camera' ? 'Фотография' : 'Файлы'} добавлены.`,
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      })
     }
   }
 
-  const handleRemoveFile = (index: number) => {
-    setFile((prev) => prev && prev.filter((_, i) => i !== index))
+  const triggerFileInput = (inputRef: React.RefObject<HTMLInputElement>) => {
+    if (inputRef.current) inputRef.current.click()
+  }
+
+  const removeFile = (index: number) => {
+    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index))
   }
 
   const handleSubmit = async () => {
-    if (!file) {
+    if (files.length === 0) {
       toast({
         title: 'Ошибка!',
-        description: 'Пожалуйста, выберите файл перед загрузкой.',
+        description: 'Пожалуйста, выберите файлы перед загрузкой.',
         status: 'warning',
         duration: 3000,
         isClosable: true,
@@ -47,107 +59,125 @@ const UploadPage = () => {
 
     setIsLoading(true)
     try {
-      const response = await postFiles(file)
+      const response = await postFiles(files)
       if (response.status === 201) {
-        setFile(null)
-        setIsLoading(false)
+        setFiles([])
+        toast({
+          title: 'Успешно!',
+          description: 'Файлы загружены.',
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        })
       }
-    } catch (error) {
-      setIsLoading(false)
-      console.error(error)
+    } catch {
       toast({
         title: 'Ошибка при загрузке!',
-        description: 'Не удалось загрузить файл. Попробуйте снова.',
+        description: 'Не удалось загрузить файлы. Попробуйте снова.',
         status: 'error',
         duration: 3000,
         isClosable: true,
       })
+    } finally {
+      setIsLoading(false)
     }
   }
 
   return (
     <ContainerApp>
-      <Flex
-        direction="column"
-        align="center"
-        justify="center"
-        w="100%"
-        h="100%"
-      >
-        <Flex w="100%">
-          <Text fontSize="18px" fontWeight={700} mb="15px">
-            Загрузка данных
-          </Text>
-        </Flex>
+      <Flex direction="column" align="center" w="100%" h="100%">
+        <Text fontSize="18px" fontWeight="700" mb="15px">
+          Загрузка данных
+        </Text>
         <Flex
+          h="100%"
           direction="column"
-          alignItems="center"
-          justifyContent="center"
-          borderWidth={2}
+          align="center"
+          justify="center"
+          borderWidth="2px"
           borderColor="blue.500"
           borderStyle="dashed"
           borderRadius="md"
-          p={6}
+          p="6"
           w="100%"
-          h="100%"
           textAlign="center"
           position="relative"
         >
           <Icon as={Upload} boxSize={12} color="blue.500" />
-          <Text fontSize="18px" mt={4}>
-            Перенесите файл в это окно <br /> <b>PNG, JPG, JPEG, ZIP, RAR</b>
+          <Text fontSize="18px" mt="4">
+            Перетащите файл сюда <br /> <b>PNG, JPG, JPEG, ZIP, RAR</b>
           </Text>
-          <Text fontSize="18px" mt={4}>
+          <Text fontSize="18px" mt="4">
             или
           </Text>
           <Input
             type="file"
             accept=".png, .jpg, .jpeg, .zip, .rar"
-            onChange={handleFileChange}
-            position="absolute"
-            top={0}
-            left={0}
-            right={0}
-            bottom={0}
-            opacity={0}
-            cursor="pointer"
-            h="100%"
-            ref={fileInputRef}
             multiple
+            ref={fileInputRef}
+            style={{ display: 'none' }}
+            onChange={(e) => handleFileSelect(e, 'file')}
           />
           <Button
             mt={4}
-            background="red.500"
+            bg="red.500"
             color="white"
-            onClick={handleUploadClick}
+            onClick={() => triggerFileInput(fileInputRef)}
           >
-            Нажмите для загрузки
+            Выберите файлы
           </Button>
         </Flex>
-        {file && (
-          <Flex mt={6} w="100%" direction="row" alignItems="center" gap="10px">
+
+        {isMobile && (
+          <Flex
+            direction="column"
+            align="center"
+            justify="center"
+            w="100%"
+            mt="6"
+          >
+            <Button
+              bg="red.500"
+              color="white"
+              leftIcon={<Camera fill="white" />}
+              onClick={() => triggerFileInput(cameraInputRef)}
+            >
+              Открыть камеру
+            </Button>
+            <Input
+              type="file"
+              accept="image/*"
+              capture
+              ref={cameraInputRef}
+              style={{ display: 'none' }}
+              onChange={(e) => handleFileSelect(e, 'camera')}
+            />
+          </Flex>
+        )}
+
+        {files.length > 0 && (
+          <Flex direction="column" align="center" w="100%" mt="6">
             <Text>Выбранные файлы:</Text>
-            {file.map((file, index) => (
-              <Flex key={index} justify="space-between" align="center">
+            {files.map((file, index) => (
+              <Flex key={index} justify="space-between" align="center" w="100%">
                 <Text fontSize="sm" noOfLines={1}>
                   {file.name}
                 </Text>
                 <IconButton
-                  colorScheme="transparent"
                   icon={<Close />}
-                  aria-label="close"
-                  onClick={() => handleRemoveFile(index)}
+                  aria-label="Удалить файл"
+                  onClick={() => removeFile(index)}
                 />
               </Flex>
             ))}
             <Button
-              ml="auto"
-              background="blue.500"
+              mt="4"
+              bg="blue.500"
               color="white"
               onClick={handleSubmit}
               isDisabled={isLoading}
             >
-              {isLoading ? <Spinner size="sm" /> : 'Импортировать'}
+              {isLoading ? <Spinner size="sm" /> : 'Загрузить'}
             </Button>
           </Flex>
         )}
