@@ -44,7 +44,7 @@ export const HistoryTable: React.FC<TableProps> = ({ data, columns }) => {
   return (
     <Box w="100%" overflowX="auto" p={isMobile ? 4 : 0} borderRadius="md">
       {isMobile ? (
-        <Box  maxW="70vw">
+        <Box maxW="70svw">
           {table.getRowModel().rows.map((row) => (
             <Box
               key={row.id}

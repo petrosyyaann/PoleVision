@@ -1,10 +1,6 @@
 import { extendTheme } from '@chakra-ui/react'
 import 'shared/config/fonts/fonts.css'
-import {
-  ButtonTheme,
-  InputTheme,
-  TextTheme,
-} from 'shared/ui'
+import { ButtonTheme, InputTheme, TextTheme } from 'shared/ui'
 
 export const theme = extendTheme({
   components: {
@@ -19,10 +15,10 @@ export const theme = extendTheme({
   styles: {
     global: {
       body: {
-        height: '100vh',
-        width: '100vw',
-        maxHeight: '100vh',
-        maxWidth: '100vw',
+        height: '100svh',
+        width: '100svw',
+        maxHeight: '100svh',
+        maxWidth: '100svw',
         overflow: 'hidden',
       },
       '#root': {
