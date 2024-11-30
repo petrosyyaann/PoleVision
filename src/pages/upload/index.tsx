@@ -12,8 +12,10 @@ import {
 import { Close, Upload, Camera } from 'shared/iconpack'
 import { Button, ContainerApp } from 'shared/ui'
 import { postFiles } from 'entities/file/api'
+import { useNavigate } from 'react-router-dom'
 
 const UploadPage = () => {
+  const navigate = useNavigate()
   const isMobile = useBreakpointValue({ base: true, md: false })
   const [files, setFiles] = useState<File[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -69,6 +71,7 @@ const UploadPage = () => {
           duration: 3000,
           isClosable: true,
         })
+        navigate('/home')
       }
     } catch {
       toast({
