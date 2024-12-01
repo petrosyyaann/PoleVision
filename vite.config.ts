@@ -11,8 +11,13 @@ export default defineConfig({
     proxy: {
       '/api/v1': {
         target: 'http://93.182.50.84:28088/api/v1',
-        changeOrigin: true,
+        changeOrigin: false,
         rewrite: (path) => path.replace(/^\/api\/v1/, ''),
+      },
+      '/fic-data': {
+        target: 'http://93.182.50.84:28088/fic-data',
+        changeOrigin: false,
+        rewrite: (path) => path.replace(/^\/fic-data/, ''),
       },
     },
   },
