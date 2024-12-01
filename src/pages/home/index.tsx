@@ -198,7 +198,7 @@ const HomePage = () => {
               {loading ? (
                 <Text>Загрузка данных...</Text>
               ) : (
-                <HistoryTable data={data} columns={columns} />
+                <HistoryTable<DataRow> data={data} columns={columns} />
               )}
             </TabPanel>
 
@@ -208,7 +208,7 @@ const HomePage = () => {
                 {loading ? (
                   <Text>Загрузка данных...</Text>
                 ) : (
-                  <HistoryTable
+                  <HistoryTable<DataRow>
                     data={singleClassData[className] || []}
                     columns={columns}
                   />
@@ -221,7 +221,10 @@ const HomePage = () => {
               {loading ? (
                 <Text>Загрузка данных...</Text>
               ) : (
-                <HistoryTable data={multiClassData} columns={columns} />
+                <HistoryTable<DataRow>
+                  data={multiClassData}
+                  columns={columns}
+                />
               )}
             </TabPanel>
           </TabPanels>

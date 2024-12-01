@@ -1,12 +1,14 @@
 import { useMatch, useNavigate } from 'react-router-dom'
 import { Calendar, Edit, Tasks } from 'shared/iconpack'
+import { Settings } from 'shared/iconpack/Settings'
 import { Box, ButtonsNavigations, Flex } from 'shared/ui'
 
 function BoardMenu() {
   const navigate = useNavigate()
-  const isHome = useMatch('/home')
+  const isHome = useMatch('/')
   const isFiles = useMatch('/files')
-  const isUpload = useMatch('/')
+  const isClasses = useMatch('/classes')
+  const isUpload = useMatch('/upload')
   return (
     <Flex
       flexDirection={'column'}
@@ -22,7 +24,7 @@ function BoardMenu() {
             title="Список изображений"
             Icon={Calendar}
             check={!!isHome}
-            onClick={() => navigate('/home')}
+            onClick={() => navigate('/')}
           />
         </Box>
         <Box>
@@ -38,7 +40,15 @@ function BoardMenu() {
             title="Загрузка"
             Icon={Edit}
             check={!!isUpload}
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/upload')}
+          />
+        </Box>
+        <Box>
+          <ButtonsNavigations
+            title="Классы"
+            Icon={Settings}
+            check={!!isClasses}
+            onClick={() => navigate('/classes')}
           />
         </Box>
       </Flex>

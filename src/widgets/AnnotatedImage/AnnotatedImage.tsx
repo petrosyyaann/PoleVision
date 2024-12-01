@@ -201,7 +201,7 @@ const AnnotatedImage: React.FC<AnnotatedImageProps> = ({
   }
 
   return (
-    <Flex position="relative" maxH="90svh" w="100%" justifyContent="center">
+    <Flex position="relative" h="90svh" w="100%" justifyContent="center">
       <Flex
         position="absolute"
         top="45%"

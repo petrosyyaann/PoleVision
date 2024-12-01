@@ -15,15 +15,19 @@ import {
   flexRender,
   getCoreRowModel,
 } from '@tanstack/react-table'
-import { DataRow } from 'pages/home'
 import { useNavigate } from 'react-router-dom'
 
-interface TableProps {
-  data: DataRow[]
-  columns: ColumnDef<DataRow>[]
+interface TableProps<T> {
+  data: T[]
+  columns: ColumnDef<T>[]
+  click?: boolean
 }
 
-export const HistoryTable: React.FC<TableProps> = ({ data, columns }) => {
+export const HistoryTable = <T,>({
+  data,
+  columns,
+  click = true,
+}: TableProps<T>) => {
   const table = useReactTable({
     data,
     columns,
@@ -44,6 +48,8 @@ export const HistoryTable: React.FC<TableProps> = ({ data, columns }) => {
               mb={4}
               borderWidth="1px"
               borderRadius="md"
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               onClick={() => navigate(`/file/${row.original.id}`)}
               cursor="pointer"
               bg="gray.50"
@@ -97,8 +103,12 @@ export const HistoryTable: React.FC<TableProps> = ({ data, columns }) => {
                 //     ? navigate(`/file/${row.original.id}`)
                 //     : undefined
                 // }
-                onClick={() => navigate(`/file/${row.original.id}`)}
-                cursor={row.original.status === 'completed' ? 'pointer' : ''}
+                onClick={() =>
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-ignore
+                  click ? navigate(`/file/${row.original.id}`) : undefined
+                }
+                // cursor={row.original?.status === 'completed' ? 'pointer' : ''}
                 _hover={{ bg: 'gray.100' }}
               >
                 {row.getVisibleCells().map((cell) => (
