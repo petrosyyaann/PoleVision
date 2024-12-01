@@ -105,6 +105,19 @@ const UploadPage = () => {
           w="100%"
           textAlign="center"
           position="relative"
+          onDragOver={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            e.dataTransfer.dropEffect = 'copy'
+          }}
+          onDrop={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            const newFiles = Array.from(e.dataTransfer.files)
+            if (newFiles.length > 0) {
+              setFiles((prevFiles) => [...prevFiles, ...newFiles])
+            }
+          }}
         >
           <Icon as={Upload} boxSize={12} color="blue.500" />
           <Text fontSize="18px" mt="4">
