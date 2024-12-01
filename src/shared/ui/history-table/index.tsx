@@ -92,11 +92,12 @@ export const HistoryTable: React.FC<TableProps> = ({ data, columns }) => {
               <Tr
                 p={2}
                 key={row.id}
-                onClick={() =>
-                  row.original.status === 'completed'
-                    ? navigate(`/file/${row.original.id}`)
-                    : undefined
-                }
+                // onClick={() =>
+                //   row.original.status === 'completed'
+                //     ? navigate(`/file/${row.original.id}`)
+                //     : undefined
+                // }
+                onClick={() => navigate(`/file/${row.original.id}`)}
                 cursor={row.original.status === 'completed' ? 'pointer' : ''}
                 _hover={{ bg: 'gray.100' }}
               >
