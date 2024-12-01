@@ -15,7 +15,7 @@ export function postFiles(
     headers: {
       'Content-Type': 'multipart/form-data',
     },
-    onUploadProgress: onProgress, 
+    onUploadProgress: onProgress,
   })
 }
 
@@ -27,6 +27,12 @@ export function getHistory() {
 
 export function getPhoto(id: number) {
   return axios.get(`/api/v1/image/${id}/`, {
+    withCredentials: true,
+  })
+}
+
+export function deletePhoto(id: number) {
+  return axios.delete(`/api/v1/image/${id}/`, {
     withCredentials: true,
   })
 }

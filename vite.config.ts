@@ -14,11 +14,11 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/v1/, ''),
       },
-      // 'fic-data/original': {
-      //   target: 'http://93.182.50.84:28088/fic-data/original',
-      //   changeOrigin: true,
-      //   rewrite: (path) => path.replace(/^fic-data\/original/, ''),
-      // },
+      'fic-data/original': {
+        target: 'http://93.182.50.84:28088/fic-data/original',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^fic-data\/original/, ''),
+      },
     },
   },
   resolve: {

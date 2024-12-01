@@ -1,8 +1,16 @@
 import { useEffect, useState } from 'react'
 import { ContainerApp, Flex, HistoryTable, Text } from 'shared/ui'
 import { ColumnDef } from '@tanstack/react-table'
-import { getHistory } from 'entities/file/api'
-import { Tabs, TabList, Tab, TabPanels, TabPanel } from '@chakra-ui/react'
+import { deletePhoto, getHistory } from 'entities/file/api'
+import {
+  Tabs,
+  TabList,
+  Tab,
+  TabPanels,
+  TabPanel,
+  Button,
+  Box,
+} from '@chakra-ui/react'
 import { getStatusInfo, Status } from 'shared/lib/getStatusInfo'
 export interface DataRow {
   id: number
@@ -16,6 +24,7 @@ export interface DataRow {
 const HomePage = () => {
   const [data, setData] = useState<DataRow[]>([])
   const [loading, setLoading] = useState(true)
+  const [update, setUpdate] = useState<boolean>()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -53,7 +62,22 @@ const HomePage = () => {
     }
 
     fetchData()
-  }, [])
+  }, [update])
+
+  const deleteFile = async (name: string) => {
+    try {
+      const item = data.find((base) => base.name === name)
+      if (!item) {
+        console.error('Элемент не найден')
+        return
+      }
+      const response = await deletePhoto(item.id)
+      console.log(response)
+      setUpdate((prev) => !prev)
+    } catch (error) {
+      console.error('Ошибка при удалении:', error)
+    }
+  }
 
   // Получаем уникальные классы и распределяем данные
   const uniqueClasses = new Set<string>()
@@ -116,6 +140,27 @@ const HomePage = () => {
         }
         return value || '—'
       },
+    },
+    {
+      id: 'actions',
+      header: 'Действия',
+      cell: (info) => (
+        <Box display="flex" gap={2} justifyContent="flex-end">
+          <Button
+            fontSize="16px"
+            color="#F179C1"
+            variant="transparent"
+            size="sm"
+            onClick={(event) => {
+              event.stopPropagation()
+              setUpdate((prev) => !prev)
+              deleteFile(info.row.original.name)
+            }}
+          >
+            Удалить
+          </Button>
+        </Box>
+      ),
     },
   ]
 
