@@ -9,6 +9,8 @@ import {
   Box,
   Text,
   Center,
+  Flex,
+  Spinner,
 } from '@chakra-ui/react'
 import { Button, ContainerApp } from 'shared/ui'
 import { DataRow } from 'pages/home'
@@ -37,7 +39,14 @@ const Files = () => {
     loadData()
   }, [])
 
-  if (loading) return <ContainerApp>Загрузка...</ContainerApp>
+  if (loading)
+    return (
+      <ContainerApp>
+        <Flex justifyContent="center" alignItems="center" h="100%">
+          <Spinner size="lg" />
+        </Flex>
+      </ContainerApp>
+    )
   if (data.length < 1)
     return (
       <ContainerApp>

@@ -39,7 +39,14 @@ const Files = () => {
     loadData()
   }, [id])
 
-  if (loading) return <ContainerApp>Загрузка...</ContainerApp>
+  if (loading)
+    return (
+      <ContainerApp>
+        <Flex justifyContent="center" alignItems="center" h="100%">
+          <Spinner size="lg" />
+        </Flex>
+      </ContainerApp>
+    )
   if (!data)
     return (
       <ContainerApp>

@@ -10,6 +10,7 @@ import {
   TabPanel,
   Box,
   Center,
+  Spinner,
 } from '@chakra-ui/react'
 import { getStatusInfo, Status } from 'shared/lib/getStatusInfo'
 import { useNavigate } from 'react-router-dom'
@@ -80,7 +81,14 @@ const HomePage = () => {
       console.error('Ошибка при удалении:', error)
     }
   }
-
+  if (loading)
+    return (
+      <ContainerApp>
+        <Flex justifyContent="center" alignItems="center" h="100%">
+          <Spinner size="lg" />
+        </Flex>
+      </ContainerApp>
+    )
   if (data.length < 1)
     return (
       <ContainerApp>

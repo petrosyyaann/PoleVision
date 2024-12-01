@@ -16,6 +16,7 @@ import { Button, ContainerApp, Flex, HistoryTable } from 'shared/ui'
 import { ColumnDef } from '@tanstack/react-table'
 import { getValidates } from 'entities/file/api'
 import { useNavigate } from 'react-router-dom'
+import InfoWithDetails from 'widgets/ValidateInstruction'
 
 export interface ValidationStatistics {
   map_base: number
@@ -60,7 +61,14 @@ const ValidatePage = () => {
   }, [])
 
   const navigate = useNavigate()
-
+  if (loading)
+    return (
+      <ContainerApp>
+        <Flex justifyContent="center" alignItems="center" h="100%">
+          <Spinner size="lg" />
+        </Flex>
+      </ContainerApp>
+    )
   if (validations.length < 1)
     return (
       <ContainerApp>
@@ -142,36 +150,32 @@ const ValidatePage = () => {
           Валидации
         </Text>
       </Flex>
-      {loading ? (
-        <Flex justifyContent="center" alignItems="center" h="100%">
-          <Spinner size="lg" />
-        </Flex>
-      ) : (
-        <Tabs isFitted variant="enclosed" mt={4}>
-          <TabList>
-            <Tab>Завершенные</Tab>
-            <Tab>В процессе</Tab>
-          </TabList>
-          <TabPanels>
-            <TabPanel>
-              <HistoryTable<GetValidationData>
-                data={finished}
-                columns={finishedColumns}
-                click={false}
-                enableSorting
-              />
-            </TabPanel>
-            <TabPanel>
-              <HistoryTable<GetValidationData>
-                data={inProgress}
-                columns={inProgressColumns}
-                click={false}
-                enableSorting
-              />
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
-      )}
+
+      <Tabs isFitted variant="enclosed" mt={4}>
+        <InfoWithDetails />
+        <TabList>
+          <Tab>Завершенные</Tab>
+          <Tab>В процессе</Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel>
+            <HistoryTable<GetValidationData>
+              data={finished}
+              columns={finishedColumns}
+              click={false}
+              enableSorting
+            />
+          </TabPanel>
+          <TabPanel>
+            <HistoryTable<GetValidationData>
+              data={inProgress}
+              columns={inProgressColumns}
+              click={false}
+              enableSorting
+            />
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </ContainerApp>
   )
 }

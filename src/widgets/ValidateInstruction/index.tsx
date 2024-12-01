@@ -9,7 +9,7 @@ import {
   Flex,
 } from '@chakra-ui/react'
 
-export const Instruction = () => {
+const InfoWithDetails = () => {
   const { isOpen, onToggle } = useDisclosure()
 
   return (
@@ -29,20 +29,16 @@ export const Instruction = () => {
           ?
         </Button>
         <Text fontSize="14px">
-          Следуйте указанным инструкциям для корректного форматирования данных.
+          Если Вы хотите провалидировать данные, требуется <Code>*.txt</Code>{' '}
+          файл.
         </Text>
       </Flex>
       <Collapse in={isOpen} animateOpacity>
         <Box bg="#f9faff" borderRadius="md" p={4} mt={2}>
           <VStack align="start" spacing={3}>
             <Text>
-              Метки для этого формата должны быть экспортированы с одним{' '}
-              <Code>*.txt</Code> файлом на изображение. Если на изображении нет
-              объектов, файл <Code>*.txt</Code> не требуется.
-            </Text>
-            <Text>
               Формат файла <Code>*.txt</Code>: одна строка на объект в формате{' '}
-              <Code>"class" x_center y_center width height</Code>.
+              <Code>"class" x_center y_center width height</Code>
             </Text>
             <Text>
               Координаты боксов должны быть в нормализованном формате{' '}
@@ -56,9 +52,9 @@ export const Instruction = () => {
                 Пример:
               </Text>
               <Code p="2" borderRadius="md" bg="gray.200" display="block">
-                "Эйфелева башня" 0.5124 0.4023 0.1532 0.2746
+                "Эйфелева башня" 0.1903 0.3348 0.0882 0.3869
                 <br />
-                "Деревянный столб" 0.7235 0.2843 0.0921 0.1983
+                "Деревянный столб" 0.5357 0.2946 0.1362 0.4048
               </Code>
             </Box>
           </VStack>
@@ -67,3 +63,5 @@ export const Instruction = () => {
     </VStack>
   )
 }
+
+export default InfoWithDetails

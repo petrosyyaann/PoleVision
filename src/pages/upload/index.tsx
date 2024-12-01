@@ -8,15 +8,13 @@ import {
   useToast,
   useBreakpointValue,
   Progress,
-  Code,
-  VStack,
-  Box,
 } from '@chakra-ui/react'
 import { Close, Upload, Camera } from 'shared/iconpack'
 import { Button, ContainerApp } from 'shared/ui'
 import { postFiles, postClass } from 'entities/file/api'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Instruction } from 'widgets/Instruction/Instruction'
+import InfoWithDetails from 'widgets/ValidateInstruction'
 
 async function callFunction(name: boolean) {
   return name ? postClass : postFiles
@@ -96,36 +94,7 @@ const UploadPage = () => {
         <Text fontSize="18px" fontWeight="700" mb="15px">
           {name ? 'Добавление классов' : 'Загрузка изображений для детекции'}
         </Text>
-        {name ? (
-          <Instruction />
-        ) : (
-          <VStack mb="15px">
-            <Text fontSize="14px">
-              Если Вы хотите провалидировать данные, требуется{' '}
-              <Code>*.txt</Code> файл. <br />
-              Формат файла <Code>*.txt</Code>: одна строка на объект в формате{' '}
-              <Code>"class" x_center y_center width height</Code>.
-            </Text>
-            <Text>
-              Координаты боксов должны быть в нормализованном формате{' '}
-              <Code>xywh</Code>
-              (от 0 до 1). Если ваши координаты в пикселях, разделите{' '}
-              <Code>x_center</Code>и <Code>width</Code> на ширину изображения, а{' '}
-              <Code>y_center</Code> и<Code>height</Code> — на высоту
-              изображения.
-            </Text>
-            <Box alignItems="flex-start">
-              <Text mb="1" fontWeight="bold">
-                Пример:
-              </Text>
-              <Code p="1" borderRadius="md" bg="gray.200">
-                "Эйфелева башня" 0.1903 0.3348 0.0882 0.3869
-                <br />
-                "Деревянный столб" 0.5357 0.2946 0.1362 0.4048
-              </Code>
-            </Box>
-          </VStack>
-        )}
+        {name ? <Instruction /> : <InfoWithDetails />}
         <Flex
           h="100%"
           direction="column"
