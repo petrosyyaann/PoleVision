@@ -6,6 +6,7 @@ import AnnotatedImage, {
 } from 'widgets/AnnotatedImage/AnnotatedImage'
 import { getPhoto } from 'entities/file/api'
 import { Status } from 'shared/lib/getStatusInfo'
+import { Spinner } from '@chakra-ui/react'
 
 export interface FileData {
   id: number
@@ -45,13 +46,20 @@ const Files = () => {
 
   return (
     <ContainerApp>
-      <Flex maxH="90svh">
+      <Flex
+        maxH="90svh"
+        w="100%"
+        alignItems="center"
+        justifyContent="center"
+        position="relative"
+      >
         <AnnotatedImage
           imageUrl={original_s3_url}
           annotations={labeling.map((label) => ({
             ...label,
           }))}
         />
+        <Spinner position="absolute" />
       </Flex>
     </ContainerApp>
   )
