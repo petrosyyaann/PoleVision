@@ -27,24 +27,30 @@ const Files = () => {
     const loadData = async () => {
       try {
         setLoading(true)
-        const response = await getPhoto(Number(id))
-        setData(
-          response.data.map(
-            (i: {
-              label: string
-              x: number
-              y: number
-              w: number
-              h: number
-            }) => ({
-              object_class: i.label,
-              x_center: i.x,
-              y_center: i.y,
-              width: i.w,
-              height: i.h,
-            })
-          )
-        )
+        getPhoto(Number(id)).then(({ data }) => {
+          setData({
+            id: data.id,
+            name: data.name,
+            original_s3_url: data.original_s3_url,
+            status: data.status,
+            labeling: data.labeling.map(
+              (i: {
+                label: string
+                x: number
+                y: number
+                w: number
+                h: number
+              }) => ({
+                object_class: i.label,
+                x_center: i.x,
+                y_center: i.y,
+                width: i.w,
+                height: i.h,
+              })
+            ),
+            created_at: data.created_at,
+          })
+        })
       } catch (err) {
         console.log(err)
       } finally {
@@ -82,20 +88,24 @@ const Files = () => {
 
   return (
     <ContainerApp>
-      <Flex
-        maxH="90svh"
-        w="100%"
-        alignItems="center"
-        justifyContent="center"
-        position="relative"
-      >
-        <AnnotatedImage
-          imageUrl={original_s3_url}
-          annotations={labeling.map((label) => ({
-            ...label,
-          }))}
-        />
-        <Spinner position="absolute" />
+      <Flex h="100%" w="100%">
+        <Flex
+          maxH="90svh"
+          w="100%"
+          alignItems="center"
+          justifyContent="center"
+          position="relative"
+        >
+          {labeling && (
+            <AnnotatedImage
+              imageUrl={original_s3_url}
+              annotations={labeling.map((label) => ({
+                ...label,
+              }))}
+            />
+          )}
+          <Spinner position="absolute" />
+        </Flex>
       </Flex>
     </ContainerApp>
   )
