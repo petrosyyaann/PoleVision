@@ -7,6 +7,7 @@ import {
   TabPanel,
   SimpleGrid,
   Box,
+  Text,
 } from '@chakra-ui/react'
 import { ContainerApp } from 'shared/ui'
 import { DataRow } from 'pages/home'
@@ -17,7 +18,6 @@ import { useNavigate } from 'react-router-dom'
 const Files = () => {
   const [data, setData] = useState<DataRow[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -28,7 +28,6 @@ const Files = () => {
         setData(response.data)
       } catch (err) {
         console.log(err)
-        setError('Не удалось загрузить данные')
       } finally {
         setLoading(false)
       }
@@ -38,7 +37,6 @@ const Files = () => {
   }, [])
 
   if (loading) return <ContainerApp>Загрузка...</ContainerApp>
-  if (error) return <ContainerApp>{error}</ContainerApp>
 
   // Получаем уникальные классы
   const uniqueClasses = Array.from(
@@ -51,6 +49,9 @@ const Files = () => {
 
   return (
     <ContainerApp>
+      <Text fontSize="18px" fontWeight={700} mb="15px">
+        Превью изображений
+      </Text>
       <Tabs variant="enclosed">
         <TabList>
           <Tab>Все</Tab>
