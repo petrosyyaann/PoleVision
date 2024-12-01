@@ -1,4 +1,4 @@
-import { Box, Flex, Text, Image } from '@chakra-ui/react'
+import { Box, Flex, Text, Image, Tooltip } from '@chakra-ui/react'
 import { getStatusInfo, Status } from 'shared/lib/getStatusInfo'
 import fallbackImage from 'shared/iconpack/150.png'
 
@@ -22,7 +22,7 @@ export const PreviewCard = ({
       borderRadius="15px"
       overflow="hidden"
       cursor={status === 'completed' ? 'pointer' : undefined}
-      onClick={status === 'completed' ? onClick : undefined}
+      onClick={onClick}
       transition="transform 0.2s"
       _hover={{ transform: status === 'completed' ? 'scale(1.03)' : '' }}
     >
@@ -38,9 +38,11 @@ export const PreviewCard = ({
 
       {/* Информация о файле */}
       <Flex direction="column" p={4}>
-        <Text fontSize="lg" mb={2}>
-          {title}
-        </Text>
+        <Tooltip label={title} hasArrow>
+          <Text fontSize="lg" mb={2} isTruncated>
+            {title}
+          </Text>
+        </Tooltip>
         <Flex
           justifyContent="center"
           fontWeight={600}
