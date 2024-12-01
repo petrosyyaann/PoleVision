@@ -8,7 +8,6 @@ export interface Annotation {
   y_center: number
   width: number
   height: number
-  prob: number
 }
 
 interface AnnotatedImageProps {

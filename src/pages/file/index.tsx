@@ -28,7 +28,23 @@ const Files = () => {
       try {
         setLoading(true)
         const response = await getPhoto(Number(id))
-        setData(response.data)
+        setData(
+          response.data.map(
+            (i: {
+              label: string
+              x: number
+              y: number
+              w: number
+              h: number
+            }) => ({
+              object_class: i.label,
+              x_center: i.x,
+              y_center: i.y,
+              width: i.w,
+              height: i.h,
+            })
+          )
+        )
       } catch (err) {
         console.log(err)
       } finally {
