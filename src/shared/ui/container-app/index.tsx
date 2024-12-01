@@ -7,6 +7,7 @@ export const ContainerApp = ({ children }: { children: ReactNode }) => {
   const margin = isMobile ? '15px' : '30px'
   return (
     <Flex
+      overflow="auto"
       w="100%"
       bg="white"
       direction="column"
