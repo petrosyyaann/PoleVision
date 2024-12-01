@@ -52,7 +52,7 @@ const AnnotatedImage: React.FC<AnnotatedImageProps> = ({
 
     if (canvas && context) {
       const image = new Image()
-      image.src = `http://93.182.50.84:28088${imageUrl}`
+      image.src = imageUrl
 
       image.onload = () => {
         canvas.width = image.width
