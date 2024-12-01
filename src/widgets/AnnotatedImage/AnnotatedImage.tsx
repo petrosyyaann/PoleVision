@@ -1,6 +1,5 @@
 import { Box, Flex, IconButton, Tooltip } from '@chakra-ui/react'
 import { useEffect, useRef, useState } from 'react'
-import photo from './example.jpg'
 import { Minus, Plus } from 'shared/iconpack'
 
 export interface Annotation {
@@ -53,9 +52,8 @@ const AnnotatedImage: React.FC<AnnotatedImageProps> = ({
 
     if (canvas && context) {
       const image = new Image()
-      image.src = photo
-      // imageUrl
-
+      image.src = `http://93.182.50.84:28088/${imageUrl}`
+      console.log(image.src)
       image.onload = () => {
         canvas.width = image.width
         canvas.height = image.height

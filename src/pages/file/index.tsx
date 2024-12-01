@@ -27,32 +27,7 @@ const Files = () => {
       try {
         setLoading(true)
         const response = await getPhoto(Number(id))
-        console.log(response.data)
-        setData({
-          id: 1,
-          name: '',
-          status: 'completed',
-          created_at: '',
-          original_s3_url: 'nnnf',
-          labeling: [
-            {
-              object_class: 'Какая-то крутая башня',
-              x_center: 0.3985,
-              y_center: 0.779875,
-              width: 0.137,
-              height: 0.13925,
-              prob: 0.444,
-            },
-            {
-              object_class: 'Какая-то крутая башня',
-              x_center: 0.13916666666666666,
-              y_center: 0.66725,
-              width: 0.15266666666666667,
-              height: 0.15,
-              prob: 0.434,
-            },
-          ],
-        })
+        setData(response.data)
       } catch (err) {
         console.log(err)
         setError('Не удалось загрузить данные')
@@ -70,7 +45,7 @@ const Files = () => {
 
   return (
     <ContainerApp>
-      <Flex maxH='90svh'>
+      <Flex maxH="90svh">
         <AnnotatedImage
           imageUrl={original_s3_url}
           annotations={labeling.map((label) => ({
