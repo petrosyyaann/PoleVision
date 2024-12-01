@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ContainerApp, Flex, HistoryTable, Text } from 'shared/ui'
+import { ContainerApp, Flex, HistoryTable, Text, Button } from 'shared/ui'
 import { ColumnDef } from '@tanstack/react-table'
 import { deletePhoto, getHistory } from 'entities/file/api'
 import {
@@ -8,10 +8,11 @@ import {
   Tab,
   TabPanels,
   TabPanel,
-  Button,
   Box,
+  Center,
 } from '@chakra-ui/react'
 import { getStatusInfo, Status } from 'shared/lib/getStatusInfo'
+import { useNavigate } from 'react-router-dom'
 export interface DataRow {
   id: number
   time: string
@@ -25,6 +26,7 @@ const HomePage = () => {
   const [data, setData] = useState<DataRow[]>([])
   const [loading, setLoading] = useState(true)
   const [update, setUpdate] = useState<boolean>()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,6 +80,20 @@ const HomePage = () => {
       console.error('Ошибка при удалении:', error)
     }
   }
+
+  if (data.length < 1)
+    return (
+      <ContainerApp>
+        <Center h="100%" flexDirection="column">
+          <Text fontSize="18px" fontWeight={700} mb="15px">
+            Пусто :(
+          </Text>
+          <Button onClick={() => navigate('/upload')}>
+            Загрузить изображения
+          </Button>
+        </Center>
+      </ContainerApp>
+    )
 
   // Получаем уникальные классы и распределяем данные
   const uniqueClasses = new Set<string>()

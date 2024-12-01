@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
-import { ContainerApp, Flex } from 'shared/ui'
+import { useNavigate, useParams } from 'react-router-dom'
+import { Button, ContainerApp, Flex, Text } from 'shared/ui'
 import AnnotatedImage, {
   Annotation,
 } from 'widgets/AnnotatedImage/AnnotatedImage'
 import { getPhoto } from 'entities/file/api'
 import { Status } from 'shared/lib/getStatusInfo'
-import { Spinner } from '@chakra-ui/react'
+import { Center, Spinner } from '@chakra-ui/react'
 
 export interface FileData {
   id: number
@@ -21,7 +21,7 @@ const Files = () => {
   const { id } = useParams<{ id: string }>()
   const [data, setData] = useState<FileData>({} as FileData)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const loadData = async () => {
@@ -31,7 +31,6 @@ const Files = () => {
         setData(response.data)
       } catch (err) {
         console.log(err)
-        setError('Не удалось загрузить данные')
       } finally {
         setLoading(false)
       }
@@ -41,7 +40,21 @@ const Files = () => {
   }, [id])
 
   if (loading) return <ContainerApp>Загрузка...</ContainerApp>
-  if (error) return <ContainerApp>{error}</ContainerApp>
+  if (!data)
+    return (
+      <ContainerApp>
+        <Center h="100%" flexDirection="column">
+          <>
+            <Text fontSize="18px" fontWeight={700} mb="15px">
+              Пусто :(
+            </Text>
+            <Button onClick={() => navigate('/upload')}>
+              Загрузить изображения
+            </Button>
+          </>
+        </Center>
+      </ContainerApp>
+    )
   const { labeling, original_s3_url } = data
 
   return (

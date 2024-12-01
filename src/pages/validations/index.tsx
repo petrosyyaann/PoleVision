@@ -7,10 +7,15 @@ import {
   Tabs,
   Text,
   Spinner,
+  Center,
+  Code,
+  VStack,
+  Box,
 } from '@chakra-ui/react'
-import { ContainerApp, Flex, HistoryTable } from 'shared/ui'
+import { Button, ContainerApp, Flex, HistoryTable } from 'shared/ui'
 import { ColumnDef } from '@tanstack/react-table'
 import { getValidates } from 'entities/file/api'
+import { useNavigate } from 'react-router-dom'
 
 export interface ValidationStatistics {
   map_base: number
@@ -53,6 +58,49 @@ const ValidatePage = () => {
 
     fetchData()
   }, [])
+
+  const navigate = useNavigate()
+
+  if (validations.length < 1)
+    return (
+      <ContainerApp>
+        <Center h="100%" flexDirection="column">
+          <Text fontSize="24px" fontWeight={700} mb="15px">
+            Пусто :(
+          </Text>
+          <Button onClick={() => navigate('/upload')}>
+            Загрузить изображения с txt
+          </Button>
+          <VStack align="start" spacing="4" w="70%" p={6} textAlign="center">
+            <Text>
+              Для создания валидаций необходим<Code>*.txt</Code> файл на каждое
+              изображение.
+              <br />
+              Формат файла <Code>*.txt</Code>: одна строка на объект в формате{' '}
+              <Code>"class" x_center y_center width height</Code>.
+            </Text>
+            <Text>
+              Координаты боксов должны быть в нормализованном формате{' '}
+              <Code>xywh</Code>
+              (от 0 до 1). Если ваши координаты в пикселях, разделите{' '}
+              <Code>x_center</Code>и <Code>width</Code> на ширину изображения, а{' '}
+              <Code>y_center</Code> и<Code>height</Code> — на высоту
+              изображения.
+            </Text>
+            <Box>
+              <Text mb="2" fontWeight="bold">
+                Пример:
+              </Text>
+              <Code p="2" borderRadius="md" bg="gray.200">
+                "Эйфелева башня" 0.1903 0.3348 0.0882 0.3869
+                <br />
+                "Деревянный столб" 0.5357 0.2946 0.1362 0.4048
+              </Code>
+            </Box>
+          </VStack>
+        </Center>
+      </ContainerApp>
+    )
 
   const finished = validations.filter((v) => v.is_finished)
   const inProgress = validations.filter((v) => !v.is_finished)

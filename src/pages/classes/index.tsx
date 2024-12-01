@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { ContainerApp, Flex, HistoryTable, Text, Button } from 'shared/ui'
 import { ColumnDef } from '@tanstack/react-table'
 import { deleteClass, getClasses } from 'entities/file/api'
-import { Box } from '@chakra-ui/react'
+import { Box, Center } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 
 export interface DataRowClass {
@@ -51,6 +51,17 @@ const ClassPage = () => {
     }
   }
 
+  if (data.length < 1)
+    return (
+      <ContainerApp>
+        <Center h="100%">
+          <Text fontSize="24px" fontWeight={700} mb="15px">
+            Пусто :(
+          </Text>
+        </Center>
+      </ContainerApp>
+    )
+
   const columns: ColumnDef<DataRowClass>[] = [
     {
       accessorKey: 'name',
@@ -83,7 +94,7 @@ const ClassPage = () => {
   return (
     <ContainerApp>
       <Flex w="100%" justifyContent="flex-end">
-        <Button onClick={() => navigate('/upload/classes')}>
+        <Button onClick={() => navigate('/upload/class')}>
           Добавить класс
         </Button>
       </Flex>

@@ -8,8 +8,9 @@ import {
   SimpleGrid,
   Box,
   Text,
+  Center,
 } from '@chakra-ui/react'
-import { ContainerApp } from 'shared/ui'
+import { Button, ContainerApp } from 'shared/ui'
 import { DataRow } from 'pages/home'
 import { getHistory } from 'entities/file/api'
 import { PreviewCard } from 'widgets/PreviewCard'
@@ -37,6 +38,19 @@ const Files = () => {
   }, [])
 
   if (loading) return <ContainerApp>Загрузка...</ContainerApp>
+  if (data.length < 1)
+    return (
+      <ContainerApp>
+        <Center h="100%" flexDirection="column">
+          <Text fontSize="18px" fontWeight={700} mb="15px">
+            Пусто :(
+          </Text>
+          <Button onClick={() => navigate('/upload')}>
+            Загрузить изображения
+          </Button>
+        </Center>
+      </ContainerApp>
+    )
 
   // Получаем уникальные классы
   const uniqueClasses = Array.from(
