@@ -16,8 +16,8 @@ export const Minus = ({ strokeColor = 'white', ...props }: MinusProps) => (
     <path
       d="M8 12H16"
       stroke={strokeColor}
-      stroke-width="1.5"
-      stroke-linecap="round"
+      strokeWidth="1.5"
+      strokeLinecap="round"
     />
   </svg>
 )

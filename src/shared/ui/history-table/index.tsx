@@ -14,6 +14,7 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
+  getSortedRowModel,
 } from '@tanstack/react-table'
 import { useNavigate } from 'react-router-dom'
 
@@ -21,17 +22,21 @@ interface TableProps<T> {
   data: T[]
   columns: ColumnDef<T>[]
   click?: boolean
+  enableSorting?: boolean
 }
 
 export const HistoryTable = <T,>({
   data,
   columns,
   click = true,
+  enableSorting,
 }: TableProps<T>) => {
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: enableSorting ? getSortedRowModel() : undefined,
+    enableSorting,
   })
 
   const navigate = useNavigate()

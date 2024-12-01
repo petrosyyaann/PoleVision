@@ -16,9 +16,9 @@ export const Edit = ({ strokeColor = '#161F29', ...props }: EditProps) => (
     <path
       d="M10 4.16675L10 13.3334M10 13.3334L13.3334 9.50989M10 13.3334L6.66671 9.50989M5.83337 16.2501H14.1667"
       stroke={strokeColor}
-      stroke-width="1.25"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 )

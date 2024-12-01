@@ -61,6 +61,12 @@ export function getClasses() {
   })
 }
 
+export function getValidates() {
+  return axios.get('/api/v1/validation/all', {
+    withCredentials: true,
+  })
+}
+
 export function deleteClass(id: number) {
   return axios.delete(`/api/v1/class/${id}/`, {
     withCredentials: true,

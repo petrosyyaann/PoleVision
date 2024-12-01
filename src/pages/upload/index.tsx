@@ -13,6 +13,7 @@ import { Close, Upload, Camera } from 'shared/iconpack'
 import { Button, ContainerApp } from 'shared/ui'
 import { postFiles, postClass } from 'entities/file/api'
 import { useNavigate, useParams } from 'react-router-dom'
+import { Instruction } from 'widgets/Instruction/Instruction'
 
 async function callFunction(name: boolean) {
   return name ? postClass : postFiles
@@ -92,6 +93,7 @@ const UploadPage = () => {
         <Text fontSize="18px" fontWeight="700" mb="15px">
           {name ? 'Добавление классов' : 'Загрузка изображений для детекции'}
         </Text>
+        {name && <Instruction />}
         <Flex
           h="100%"
           direction="column"
@@ -121,14 +123,15 @@ const UploadPage = () => {
         >
           <Icon as={Upload} boxSize={12} color="blue.500" />
           <Text fontSize="18px" mt="4">
-            Перетащите файл сюда <br /> <b>PNG, JPG, JPEG, ZIP, RAR</b>
+            Перетащите файл сюда <br />{' '}
+            <b>{`PNG, JPG, JPEG, ZIP, RAR${name && ', TXT'}`}</b>
           </Text>
           <Text fontSize="18px" mt="4">
             или
           </Text>
           <Input
             type="file"
-            accept=".png, .jpg, .jpeg, .zip, .rar"
+            accept={`.png, .jpg, .jpeg, .zip, .rar${name && ', .txt'}`}
             multiple
             ref={fileInputRef}
             style={{ display: 'none' }}

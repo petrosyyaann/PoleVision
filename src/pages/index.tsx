@@ -8,6 +8,7 @@ const UploadPage = lazy(() => import('./upload'))
 const FilesPage = lazy(() => import('./files'))
 const FilePage = lazy(() => import('./file'))
 const ClassPage = lazy(() => import('./classes'))
+const ValidationPage = lazy(() => import('./validations'))
 
 export default function Routing() {
   return (
@@ -17,6 +18,7 @@ export default function Routing() {
       </Flex>
       <Routes>
         <Route path={'/upload'} element={<UploadPage />} />
+        <Route path={'/validations'} element={<ValidationPage />} />
         <Route path={'/upload/:name'} element={<UploadPage />} />
         <Route path={'/'} element={<HomePage />} />
         <Route path={'/classes'} element={<ClassPage />} />
