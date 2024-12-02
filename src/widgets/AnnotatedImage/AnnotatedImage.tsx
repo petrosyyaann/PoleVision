@@ -45,48 +45,69 @@ const AnnotatedImage: React.FC<AnnotatedImageProps> = ({
     y: number
   } | null>(null)
 
+
   useEffect(() => {
     const canvas = canvasRef.current
     const context = canvas?.getContext('2d')
 
     if (canvas && context) {
-      const image = new Image()
-      image.src = `..${imageUrl}`
-      console.log(`..${imageUrl}`)
-
-      image.onload = () => {
-        canvas.width = image.width
-        canvas.height = image.height
-
-        const drawCanvas = () => {
+      // Предзагрузка изображения
+      preloadImage(imageUrl)
+        .then((image) => {
+          // Настройка холста
+          canvas.width = image.width
+          canvas.height = image.height
           context.clearRect(0, 0, canvas.width, canvas.height)
 
-          context.save()
-          context.scale(scale, scale)
-          context.translate(translate.x, translate.y)
-
+          // Рисуем изображение
           context.drawImage(image, 0, 0)
 
-          annotations.forEach(
-            ({ x_center, y_center, width, height, object_class }) => {
-              const x = (x_center - width / 2) * image.width
-              const y = (y_center - height / 2) * image.height
-              const boxWidth = width * image.width
-              const boxHeight = height * image.height
-
-              context.strokeStyle = getColorByClass(object_class)
-              context.lineWidth = 20 / scale
-              context.strokeRect(x, y, boxWidth, boxHeight)
-            }
+          // Отрисовка аннотаций
+          drawAnnotations(context, image)
+        })
+        .catch(() => {
+          // Обработка ошибки
+          context.clearRect(0, 0, canvas.width, canvas.height)
+          context.fillStyle = '#ff0000'
+          context.textAlign = 'center'
+          context.textBaseline = 'middle'
+          context.fillText(
+            'Ошибка загрузки изображения',
+            canvas.width / 2,
+            canvas.height / 2
           )
-
-          context.restore()
-        }
-
-        drawCanvas()
-      }
+        })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imageUrl, annotations, scale, translate])
+
+
+  const preloadImage = (url: string): Promise<HTMLImageElement> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image()
+      img.src = url
+      img.onload = () => resolve(img)
+      img.onerror = (err) => reject(err)
+    })
+  }
+
+  const drawAnnotations = (
+    context: CanvasRenderingContext2D,
+    image: HTMLImageElement
+  ) => {
+    annotations.forEach(
+      ({ x_center, y_center, width, height, object_class }) => {
+        const x = (x_center - width / 2) * image.width
+        const y = (y_center - height / 2) * image.height
+        const boxWidth = width * image.width
+        const boxHeight = height * image.height
+
+        context.strokeStyle = getColorByClass(object_class)
+        context.lineWidth = 20 / scale
+        context.strokeRect(x, y, boxWidth, boxHeight)
+      }
+    )
+  }
 
   const handleMouseDown = (event: React.MouseEvent<HTMLCanvasElement>) => {
     setIsDragging(true)
