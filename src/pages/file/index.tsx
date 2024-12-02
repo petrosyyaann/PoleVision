@@ -15,6 +15,7 @@ export interface FileData {
   status: Status
   labeling: Annotation[]
   created_at: string
+  preview_s3_url: string
 }
 
 const Files = () => {
@@ -31,6 +32,7 @@ const Files = () => {
           setData({
             id: data.id,
             name: data.name,
+            preview_s3_url: data.preview_s3_url,
             original_s3_url: data.original_s3_url,
             status: data.status,
             labeling: data.labeling.map(
@@ -84,7 +86,7 @@ const Files = () => {
         </Center>
       </ContainerApp>
     )
-  const { labeling, original_s3_url } = data
+  const { labeling, original_s3_url, preview_s3_url } = data
 
   return (
     <ContainerApp>
@@ -98,6 +100,7 @@ const Files = () => {
         >
           {labeling && (
             <AnnotatedImage
+              preview_s3_url={preview_s3_url}
               imageUrl={original_s3_url}
               annotations={labeling.map((label) => ({
                 ...label,

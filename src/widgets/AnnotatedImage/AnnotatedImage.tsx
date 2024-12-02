@@ -12,6 +12,7 @@ export interface Annotation {
 
 interface AnnotatedImageProps {
   imageUrl: string
+  preview_s3_url: string
   annotations: Annotation[]
 }
 
@@ -27,6 +28,7 @@ const getColorByClass = (objectClass: string): string => {
 const AnnotatedImage: React.FC<AnnotatedImageProps> = ({
   imageUrl,
   annotations,
+  preview_s3_url,
 }) => {
   const [scale, setScale] = useState(1)
   const [translate, setTranslate] = useState({ x: 0, y: 0 })
@@ -45,28 +47,39 @@ const AnnotatedImage: React.FC<AnnotatedImageProps> = ({
     y: number
   } | null>(null)
 
-
   useEffect(() => {
     const canvas = canvasRef.current
     const context = canvas?.getContext('2d')
 
     if (canvas && context) {
-      // Предзагрузка изображения
-      preloadImage(imageUrl)
-        .then((image) => {
-          // Настройка холста
-          canvas.width = image.width
-          canvas.height = image.height
+      // Сначала загружаем мини-версию изображения
+      preloadImage(preview_s3_url)
+        .then((previewImage) => {
+          // Настройка холста для мини-изображения
+          canvas.width = previewImage.width
+          canvas.height = previewImage.height
           context.clearRect(0, 0, canvas.width, canvas.height)
 
-          // Рисуем изображение
-          context.drawImage(image, 0, 0)
+          // Отображаем мини-изображение
+          context.drawImage(previewImage, 0, 0)
+
+          // Параллельно загружаем полное изображение
+          return preloadImage(imageUrl)
+        })
+        .then((fullImage) => {
+          // Обновление холста для полного изображения
+          canvas.width = fullImage.width
+          canvas.height = fullImage.height
+          context.clearRect(0, 0, canvas.width, canvas.height)
+
+          // Отображаем полное изображение
+          context.drawImage(fullImage, 0, 0)
 
           // Отрисовка аннотаций
-          drawAnnotations(context, image)
+          drawAnnotations(context, fullImage)
         })
         .catch(() => {
-          // Обработка ошибки
+          // Обработка ошибок при загрузке
           context.clearRect(0, 0, canvas.width, canvas.height)
           context.fillStyle = '#ff0000'
           context.textAlign = 'center'
@@ -79,12 +92,12 @@ const AnnotatedImage: React.FC<AnnotatedImageProps> = ({
         })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imageUrl, annotations, scale, translate])
-
+  }, [imageUrl, preview_s3_url, annotations, scale, translate])
 
   const preloadImage = (url: string): Promise<HTMLImageElement> => {
     return new Promise((resolve, reject) => {
       const img = new Image()
+      img.crossOrigin = 'anonymous' // Убедитесь, что это нужно для CORS
       img.src = url
       img.onload = () => resolve(img)
       img.onerror = (err) => reject(err)
