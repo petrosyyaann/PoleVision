@@ -47,39 +47,37 @@ const AnnotatedImage: React.FC<AnnotatedImageProps> = ({
     y: number
   } | null>(null)
 
+  const preloadImage = (url: string): Promise<HTMLImageElement> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image()
+      img.crossOrigin = 'anonymous' // Убедитесь, что это нужно для CORS
+      img.src = url
+      img.onload = () => resolve(img)
+      img.onerror = (err) => reject(err)
+    })
+  }
+
   useEffect(() => {
     const canvas = canvasRef.current
     const context = canvas?.getContext('2d')
 
     if (canvas && context) {
-      // Сначала загружаем мини-версию изображения
+      let isPreviewDisplayed = true
+
+      // Загружаем превью
       preloadImage(preview_s3_url)
         .then((previewImage) => {
-          // Настройка холста для мини-изображения
-          canvas.width = previewImage.width
-          canvas.height = previewImage.height
-          context.clearRect(0, 0, canvas.width, canvas.height)
-
-          // Отображаем мини-изображение
-          context.drawImage(previewImage, 0, 0)
-
-          // Параллельно загружаем полное изображение
+          // Отображаем превью
+          drawCanvas(previewImage)
           return preloadImage(imageUrl)
         })
         .then((fullImage) => {
-          // Обновление холста для полного изображения
-          canvas.width = fullImage.width
-          canvas.height = fullImage.height
-          context.clearRect(0, 0, canvas.width, canvas.height)
-
-          // Отображаем полное изображение
-          context.drawImage(fullImage, 0, 0)
-
-          // Отрисовка аннотаций
-          drawAnnotations(context, fullImage)
+          // После загрузки полного изображения заменяем превью
+          isPreviewDisplayed = false
+          drawCanvas(fullImage)
         })
         .catch(() => {
-          // Обработка ошибок при загрузке
+          // Обработка ошибок
           context.clearRect(0, 0, canvas.width, canvas.height)
           context.fillStyle = '#ff0000'
           context.textAlign = 'center'
@@ -90,19 +88,33 @@ const AnnotatedImage: React.FC<AnnotatedImageProps> = ({
             canvas.height / 2
           )
         })
+
+      // Отрисовка изображения с учетом текущего масштаба и трансляции
+      const drawCanvas = (image: HTMLImageElement) => {
+        context.save()
+        context.clearRect(0, 0, canvas.width, canvas.height)
+
+        if (!isPreviewDisplayed) {
+          // Перезагрузка канваса после удаления превью
+          canvas.width = image.width
+          canvas.height = image.height
+        }
+
+        // Применяем трансформации
+        context.translate(translate.x, translate.y)
+        context.scale(scale, scale)
+
+        // Отрисовываем изображение
+        context.drawImage(image, 0, 0)
+
+        // Отрисовываем аннотации
+        drawAnnotations(context, image)
+
+        context.restore()
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imageUrl, preview_s3_url, annotations, scale, translate])
-
-  const preloadImage = (url: string): Promise<HTMLImageElement> => {
-    return new Promise((resolve, reject) => {
-      const img = new Image()
-      img.crossOrigin = 'anonymous' // Убедитесь, что это нужно для CORS
-      img.src = url
-      img.onload = () => resolve(img)
-      img.onerror = (err) => reject(err)
-    })
-  }
 
   const drawAnnotations = (
     context: CanvasRenderingContext2D,
@@ -116,7 +128,7 @@ const AnnotatedImage: React.FC<AnnotatedImageProps> = ({
         const boxHeight = height * image.height
 
         context.strokeStyle = getColorByClass(object_class)
-        context.lineWidth = 20 / scale
+        context.lineWidth = 4 / scale // Линия изменяется в зависимости от масштаба
         context.strokeRect(x, y, boxWidth, boxHeight)
       }
     )

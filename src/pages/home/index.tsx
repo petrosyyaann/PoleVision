@@ -50,7 +50,10 @@ const HomePage = () => {
               hour: '2-digit',
               minute: '2-digit',
             }),
-            name: item.name,
+            name:
+              item.name.length > 30
+                ? `${item.name.substring(0, 35)}...`
+                : item.name,
             status: item.status,
             object_classes: item.object_classes,
             preview_s3_url: Boolean(item.preview_s3_url_s3_url),
