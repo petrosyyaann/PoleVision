@@ -19,7 +19,7 @@ interface AnnotatedImageProps {
 const getColorByClass = (objectClass: string): string => {
   if ('Одноцепная башенного типа' === objectClass) return '#7984F1'
   if ('Двухцепная башенного типа' === objectClass) return '#61C6FF'
-  if ('Свободно стоящая типа «рюмка»' === objectClass) return '#F179C1'
+  if ('Свободно стоящая типа "Рюмка"' === objectClass) return '#F179C1'
   if ('Портальная на оттяжках' === objectClass) return '#79F17E'
   if (objectClass === 'Другие классы') return '#FFDC61'
   return '#000000'
@@ -128,7 +128,7 @@ const AnnotatedImage: React.FC<AnnotatedImageProps> = ({
         const boxHeight = height * image.height
 
         context.strokeStyle = getColorByClass(object_class)
-        context.lineWidth = 4 / scale // Линия изменяется в зависимости от масштаба
+        context.lineWidth = (7 / scale) * window.devicePixelRatio
         context.strokeRect(x, y, boxWidth, boxHeight)
       }
     )
