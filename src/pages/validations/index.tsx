@@ -31,6 +31,7 @@ export interface ValidationStatistics {
   multiclass_f1_score: number
   multiclass_precision: number
   multiclass_recall: number
+  iou: number
 }
 
 export interface GetValidationData {
@@ -120,15 +121,16 @@ const ValidatePage = () => {
       header: 'Время',
       cell: (info) => new Date(info.getValue() as string).toLocaleString(),
     },
-    { accessorKey: 'metrics.map_base', header: 'mAP Base' },
-    { accessorKey: 'metrics.map_50', header: 'mAP 50' },
-    { accessorKey: 'metrics.map_75', header: 'mAP 75' },
-    { accessorKey: 'metrics.map_msall', header: 'mAP MSAll' },
-    { accessorKey: 'metrics.mar_1', header: 'mAR 1' },
-    { accessorKey: 'metrics.mar_10', header: 'mAR 10' },
-    { accessorKey: 'metrics.mar_100', header: 'mAR 100' },
-    { accessorKey: 'metrics.mar_small', header: 'mAR Small' },
-    { accessorKey: 'metrics.multiclass_accuracy', header: 'Accuracy' },
+    { accessorKey: 'metrics.iou', header: 'IoU' },
+    // { accessorKey: 'metrics.map_base', header: 'mAP Base' },
+    // { accessorKey: 'metrics.map_50', header: 'mAP 50' },
+    // { accessorKey: 'metrics.map_75', header: 'mAP 75' },
+    // { accessorKey: 'metrics.map_msall', header: 'mAP MSAll' },
+    // { accessorKey: 'metrics.mar_1', header: 'mAR 1' },
+    // { accessorKey: 'metrics.mar_10', header: 'mAR 10' },
+    // { accessorKey: 'metrics.mar_100', header: 'mAR 100' },
+    // { accessorKey: 'metrics.mar_small', header: 'mAR Small' },
+    // { accessorKey: 'metrics.multiclass_accuracy', header: 'Accuracy' },
     { accessorKey: 'metrics.multiclass_f1_score', header: 'F1-Score' },
     { accessorKey: 'metrics.multiclass_precision', header: 'Precision' },
     { accessorKey: 'metrics.multiclass_recall', header: 'Recall' },
